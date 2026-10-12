@@ -9,6 +9,7 @@
   let fs = $state(isFs());
   let note = $state('');
   const fsOk = fsSupported();
+  const version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
 
   function toggle() {
     open = !open;
@@ -42,6 +43,7 @@
       {/if}
       <button class="go" onclick={toggle}>{ingame ? 'Reprendre' : 'Fermer'}</button>
       {#if note}<p class="note">{note}</p>{/if}
+      <p class="note ver">Version {version}</p>
     </div>
   {/if}
 </div>
@@ -68,6 +70,7 @@
   .panel button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
   .ic { width: 26px; text-align: center; font-size: 20px; }
   .go { background: #ffd84d !important; justify-content: center; }
+  .ver { text-align: center; opacity: 0.7; }
   .note { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
   @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
 </style>

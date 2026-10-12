@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "duogames",
+  "compatibility_date": "2026-10-12",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  },
+  // Preview settings are isolated from production.
+  // Add preview-specific bindings or variables here if the app needs them.
+  "previews": {}
+}
