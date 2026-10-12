@@ -75,7 +75,7 @@
 {/if}
 
 <style>
-  main { max-width: 520px; margin: 0 auto; padding: 12px 16px 30px; height: 100%; overflow-y: auto; }
+  main { max-width: 520px; margin: 0 auto; padding: 12px 16px 30px; }
   .topbar { display: flex; justify-content: flex-end; }
   .hero { text-align: center; margin: 0 0 18px; }
   h1 {

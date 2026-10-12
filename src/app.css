@@ -9,6 +9,7 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body, #app { height: 100%; margin: 0; }
+#app { overflow-y: auto; }
 body {
   background-color: #ffd84d;
   background-image: radial-gradient(rgba(255, 255, 255, .5) 3px, transparent 3.5px);
