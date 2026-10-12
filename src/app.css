@@ -23,8 +23,6 @@ body {
 }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 canvas {
-  touch-action: none; display: block; border-radius: 20px;
-  outline: 5px solid var(--ink); outline-offset: -5px;
-  box-shadow: 0 7px 0 var(--ink);
+  touch-action: none; display: block;
 }
 .outlined { -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; }

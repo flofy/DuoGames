@@ -149,5 +149,5 @@
 <canvas bind:this={cv} width={W} height={H}></canvas>
 
 <style>
-  canvas { width: min(100cqw, 100cqh * 9 / 16); aspect-ratio: 9 / 16; height: auto; }
+  canvas { width: 100%; height: 100%; }
 </style>
