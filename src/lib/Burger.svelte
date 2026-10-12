@@ -65,23 +65,26 @@
   .burger:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
   .panel {
     position: fixed; inset: 0; z-index: 40;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
     background: rgba(31, 26, 46, .55);
     animation: fade .18s ease-out;
   }
   .inner {
-    width: min(100%, 340px); display: flex; flex-direction: column; gap: 10px;
-    background: #fff7dd; border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 8px 0 var(--ink); padding: 16px;
-    animation: pop .18s ease-out;
+    width: 100%; height: 100%; max-width: 520px; margin: 0 auto;
+    display: flex; flex-direction: column; justify-content: center; gap: 12px;
+    background: #fff7dd;
+    padding: 24px 20px;
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    animation: rise .2s ease-out;
   }
   .panel button {
-    display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; background: #fff;
-    border: 3px solid var(--ink); border-radius: 14px; box-shadow: 0 4px 0 var(--ink); font-weight: 700; font-size: 16px;
+    display: flex; align-items: center; gap: 12px; text-align: left; padding: 15px 16px; background: #fff;
+    border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 4px 0 var(--ink); font-weight: 700; font-size: 18px;
   }
   .panel button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
-  .ic { width: 26px; text-align: center; font-size: 20px; }
-  .go { background: #ffd84d !important; justify-content: center; }
-  .note { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
-  @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+  .ic { width: 28px; text-align: center; font-size: 22px; }
+  .go { background: #ffd84d !important; justify-content: center; font-size: 19px; }
+  .note { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; }
+  @keyframes rise { from { transform: translateY(18px); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 </style>
