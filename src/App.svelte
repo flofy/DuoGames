@@ -11,6 +11,8 @@
   let splash = $state(true);
   let leaving = $state(false);
   const title = 'Jeux à deux'.split('');
+  const classic = games.filter((g) => !g.party);
+  const party = games.filter((g) => g.party);
 
   function skip() {
     if (leaving) return;
@@ -26,6 +28,14 @@
   function open(g) { sfx('tap'); current = g; }
   function setMode(m) { sfx('tap'); mode = m; }
 </script>
+
+{#snippet card(g)}
+  <button class="card" style="--c:{g.color};--i:{games.indexOf(g)}" onclick={() => open(g)}>
+    <span class="emoji">{g.emoji}</span>
+    <strong class="outlined">{g.name}</strong>
+    <small>{g.desc}</small>
+  </button>
+{/snippet}
 
 {#if current}
   <GameShell game={current} {mode} onexit={() => (current = null)} />
@@ -50,12 +60,15 @@
     </div>
 
     <div class="grid">
-      {#each games as g, i}
-        <button class="card" style="--c:{g.color};--i:{i}" onclick={() => open(g)}>
-          <span class="emoji">{g.emoji}</span>
-          <strong class="outlined">{g.name}</strong>
-          <small>{g.desc}</small>
-        </button>
+      {#each classic as g (g.id)}
+        {@render card(g)}
+      {/each}
+    </div>
+
+    <h2 class="cat outlined">🎉 Party</h2>
+    <div class="grid">
+      {#each party as g (g.id)}
+        {@render card(g)}
       {/each}
     </div>
   </main>
@@ -95,6 +108,7 @@
   .p1 { color: #0a8fd1; } .p2 { color: #e0185f; }
   .mid { color: #e08a00; }
   .reset { background: transparent; font-size: 20px; color: var(--muted); }
+  .cat { margin: 26px 0 14px; font-size: 28px; color: #fff; -webkit-text-stroke-width: 7px; text-shadow: 0 4px 0 var(--ink); transform: rotate(-1.5deg); text-align: center; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
   .card {
     background: var(--c); border: 4px solid var(--ink); border-radius: 22px; padding: 14px 10px 12px; text-align: center;
