@@ -37,3 +37,15 @@ src/
 ## Android
 
 Emballage possible avec Capacitor : `npm i @capacitor/core @capacitor/cli @capacitor/android`, `npx cap init`, `npm run build`, `npx cap add android`, `npx cap sync`.
+
+## GitHub Pages
+
+Le site web est déployé automatiquement sur GitHub Pages à chaque push sur `main` (et manuellement via `workflow_dispatch`) grâce au workflow `.github/workflows/deploy-pages.yml`. Le build SvelteKit est généré dans `dist/`, packagé puis déployé. L'URL du déploiement est affichée dans l'output du workflow.
+
+## CI
+
+Le pipeline `Quality Checks` (`.github/workflows/ci.yml`) s'exécute à chaque push et pull request sur `main` : installation des dépendances (`npm ci`), build, puis les tests avec couverture (`npm run test:coverage`, Vitest).
+
+## PWA et icône
+
+L'application est prévue pour être installable (PWA) : `public/icon.svg`, `public/manifest.webmanifest`, et les favicons dans `index.html` (apple-touch-icon, theme-color). L'icône natif Android est déjà prise en charge par les ressources `mipmap` de `android/app/src/main/res` (`ic_launcher`).

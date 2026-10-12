@@ -1,5 +1,26 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+
+# Build output (web)
+dist/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Native Android (Capacitor) - scaffold généré, non versionné par défaut
+android/
+
+# Native iOS (Capacitor)
+ios/
+
+# Android packages
+*.apk
+*.aab
+
+# Tooling caches
+.vite/
+
+# OS and logs
 .DS_Store
 *.log
-.vite
