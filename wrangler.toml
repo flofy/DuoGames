@@ -1,0 +1,8 @@
+name = "duogames"
+compatibility_date = "2026-10-12"
+
+# Vite génère l'application statique dans dist/.
+# Cloudflare Workers Builds déploie ce répertoire pour chaque branche/PR.
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
