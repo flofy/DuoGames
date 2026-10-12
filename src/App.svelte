@@ -3,6 +3,7 @@
   import { games } from './games/index.js';
   import GameShell from './lib/GameShell.svelte';
   import Burger from './lib/Burger.svelte';
+  import UpdateBanner from './lib/UpdateBanner.svelte';
   import { stats } from './lib/store.svelte.js';
   import { sfx } from './lib/sfx.svelte.js';
 
@@ -73,6 +74,8 @@
     </div>
   </main>
 {/if}
+
+<UpdateBanner />
 
 {#if splash}
   <div class="splash" class:out={leaving} onclick={skip} role="presentation">
