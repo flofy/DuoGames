@@ -1,0 +1,71 @@
+name: Android APK
+
+# Tag vX.Y.Z : APK publié dans la release GitHub. Lancement manuel : APK en artefact du run.
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm run test
+      - run: npm run build
+
+      # android/ n'est pas versionné : on régénère le projet natif à chaque build
+      - name: Générer le projet Android (Capacitor)
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Version de l'APK (versionName = package.json, versionCode = n° de run)
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"${VERSION}\"/" android/app/build.gradle
+          grep -nE "versionCode|versionName" android/app/build.gradle
+
+      - name: Build APK (debug, signé avec la clé debug)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Renommer l'APK
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          cp android/app/build/outputs/apk/debug/app-debug.apk "jeux-a-deux-${VERSION}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: jeux-a-deux-*.apk
+          retention-days: 30
+
+      - name: Joindre l'APK à la release (tags uniquement)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" --generate-notes || true
+          gh release upload "$TAG" jeux-a-deux-*.apk --clobber
