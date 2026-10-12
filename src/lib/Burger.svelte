@@ -25,6 +25,14 @@
   function restart() { loopState.paused = false; open = false; onrestart?.(); }
 
   $effect(() => () => { loopState.paused = false; });
+
+  // Téléporte le panneau dans <body> afin d'échapper à tout "containing block"
+  // d'ancêtre (transform, container-type, contain…). Sans ça, un ancêtre du jeu
+  // peut cantonner le position: fixed au stage au lieu du viewport → pas plein écran.
+  function portal(node) {
+    document.body.appendChild(node);
+    return { destroy() { node.remove(); } };
+  }
 </script>
 
 <svelte:document onfullscreenchange={() => (fs = isFs())} />
@@ -32,7 +40,7 @@
 <div class="bwrap">
   <button class="burger" onclick={toggle} aria-label="Menu" aria-expanded={open}><i></i><i></i><i></i></button>
   {#if open}
-    <div class="panel" class:right={side === 'right'} onclick={toggle} role="presentation">
+    <div class="panel" use:portal class:right={side === 'right'} onclick={toggle} role="presentation">
       <div class="inner" onclick={(e) => e.stopPropagation()} role="menu" tabindex="-1" onkeydown={(e) => e.key === 'Escape' && toggle()}>
         <button onclick={toggleSound}><span class="ic">{sound.on ? '🔊' : '🔇'}</span>Son : {sound.on ? 'activé' : 'coupé'}</button>
         <button onclick={doFs}><span class="ic">⛶</span>{fs ? 'Quitter le plein écran' : fsOk ? 'Plein écran' : 'Plein écran (indisponible)'}</button>
