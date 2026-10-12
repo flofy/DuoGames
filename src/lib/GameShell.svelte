@@ -29,9 +29,11 @@
 
 <div class="shell" style="--c:{game.color}">
   <div class="stage" class:dom={game.dom}>
-    {#key round}
-      <game.component {mode} onpoint={point} />
-    {/key}
+    <div class="gamewrap">
+      {#key round}
+        <game.component {mode} onpoint={point} />
+      {/key}
+    </div>
 
     <div class="hud">
       <Burger ingame onmenu={onexit} onrestart={again} />
@@ -64,7 +66,11 @@
 <style>
   .shell { height: 100%; }
   .stage {
-    height: 100%; position: relative; container-type: size;
+    height: 100%; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gamewrap {
+    width: 100%; height: 100%; container-type: size;
     display: flex; align-items: center; justify-content: center;
   }
   .stage.dom { padding-top: 60px; }
