@@ -1,0 +1,30 @@
+:root {
+  --ink: #1f1a2e;
+  --paper: #fff7dd;
+  --p1: #19b5fe;
+  --p2: #ff3d7f;
+  --muted: #6b5a3c;
+  --font: 'Fredoka', 'Baloo 2', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  background-color: #ffd84d;
+  background-image: radial-gradient(rgba(255, 255, 255, .5) 3px, transparent 3.5px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 500;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+button { font: inherit; color: inherit; cursor: pointer; border: 0; }
+canvas {
+  touch-action: none; display: block; border-radius: 20px;
+  outline: 5px solid var(--ink); outline-offset: -5px;
+  box-shadow: 0 7px 0 var(--ink);
+}
+.outlined { -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; }
