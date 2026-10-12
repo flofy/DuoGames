@@ -306,7 +306,8 @@
   .mini :global(.board) { border-width: 3px; box-shadow: 0 4px 0 var(--ink); }
   .cells { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); }
   .cells i { border: 1px solid rgba(255, 255, 255, .45); }
-  .cells.top { z-index: 3; }
+  .cells.top { z-index: 3; pointer-events: none; }
+  .t:not(:disabled) { pointer-events: auto; }
   .t { background: transparent; padding: 0; border: 0; display: flex; align-items: center; justify-content: center; }
   .t svg { width: 86%; height: 86%; }
   .t:not(:disabled):active { background: rgba(255, 255, 255, .4); }

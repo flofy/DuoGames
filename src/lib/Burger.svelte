@@ -32,16 +32,17 @@
 <div class="bwrap">
   <button class="burger" onclick={toggle} aria-label="Menu" aria-expanded={open}><i></i><i></i><i></i></button>
   {#if open}
-    <button class="scrim" onclick={toggle} aria-label="Fermer"></button>
-    <div class="panel" class:right={side === 'right'}>
-      <button onclick={toggleSound}><span class="ic">{sound.on ? '🔊' : '🔇'}</span>Son : {sound.on ? 'activé' : 'coupé'}</button>
-      <button onclick={doFs}><span class="ic">⛶</span>{fs ? 'Quitter le plein écran' : fsOk ? 'Plein écran' : 'Plein écran (indisponible)'}</button>
-      {#if ingame}
-        <button onclick={restart}><span class="ic">↺</span>Recommencer</button>
-        <button onclick={menu}><span class="ic">🏠</span>Retour au menu</button>
-      {/if}
-      <button class="go" onclick={toggle}>{ingame ? 'Reprendre' : 'Fermer'}</button>
-      {#if note}<p class="note">{note}</p>{/if}
+    <div class="panel" class:right={side === 'right'} onclick={toggle} role="presentation">
+      <div class="inner" onclick={(e) => e.stopPropagation()} role="menu" tabindex="-1" onkeydown={(e) => e.key === 'Escape' && toggle()}>
+        <button onclick={toggleSound}><span class="ic">{sound.on ? '🔊' : '🔇'}</span>Son : {sound.on ? 'activé' : 'coupé'}</button>
+        <button onclick={doFs}><span class="ic">⛶</span>{fs ? 'Quitter le plein écran' : fsOk ? 'Plein écran' : 'Plein écran (indisponible)'}</button>
+        {#if ingame}
+          <button onclick={restart}><span class="ic">↺</span>Recommencer</button>
+          <button onclick={menu}><span class="ic">🏠</span>Retour au menu</button>
+        {/if}
+        <button class="go" onclick={toggle}>{ingame ? 'Reprendre' : 'Fermer'}</button>
+        {#if note}<p class="note">{note}</p>{/if}
+      </div>
     </div>
   {/if}
 </div>
@@ -54,13 +55,17 @@
   }
   .burger i { display: block; width: 22px; height: 3.5px; background: var(--ink); border-radius: 3px; }
   .burger:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
-  .scrim { position: fixed; inset: 0; background: rgba(31, 26, 46, .45); z-index: 39; border-radius: 0; }
   .panel {
-    position: absolute; top: 56px; left: 0; z-index: 40; width: 250px; display: flex; flex-direction: column; gap: 8px;
-    background: #fff7dd; border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 8px 0 var(--ink); padding: 12px;
+    position: fixed; inset: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    background: rgba(31, 26, 46, .55);
+    animation: fade .18s ease-out;
+  }
+  .inner {
+    width: min(100%, 340px); display: flex; flex-direction: column; gap: 10px;
+    background: #fff7dd; border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 8px 0 var(--ink); padding: 16px;
     animation: pop .18s ease-out;
   }
-  .panel.right { left: auto; right: 0; }
   .panel button {
     display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; background: #fff;
     border: 3px solid var(--ink); border-radius: 14px; box-shadow: 0 4px 0 var(--ink); font-weight: 700; font-size: 16px;
@@ -70,4 +75,5 @@
   .go { background: #ffd84d !important; justify-content: center; }
   .note { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
   @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 </style>
