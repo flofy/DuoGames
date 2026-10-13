@@ -2,6 +2,7 @@
   import { sound, toggleSound, sfx } from './sfx.svelte.js';
   import { fsSupported, isFs, toggleFs } from './fullscreen.js';
   import { loopState } from './canvas.js';
+  import { pwa, installPwa } from './pwa.svelte.js';
 
   let { ingame = false, side = 'left', onmenu, onrestart } = $props();
 
@@ -38,6 +39,14 @@
     const ok = await toggleFs();
     if (!ok) note = 'Le plein écran a été refusé par le navigateur.';
   }
+  async function doInstall() {
+    try {
+      await installPwa();
+      open = false;
+    } catch {
+      note = "L'installation n'a pas pu être lancée. Essaie depuis le menu du navigateur.";
+    }
+  }
   function menu() { loopState.paused = false; open = false; onmenu?.(); }
   function restart() { loopState.paused = false; open = false; onrestart?.(); }
 
@@ -59,6 +68,9 @@
   {#if open}
     <div id="duogames-menu" class="panel" onclick={(e) => e.target === e.currentTarget && toggle()} role="presentation">
       <div bind:this={panelEl} class="inner" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
+        {#if pwa.installAvailable}
+          <button class="install" onclick={doInstall}><span class="ic">⬇️</span>Installer l'application</button>
+        {/if}
         <button onclick={toggleSound}><span class="ic">{sound.on ? '🔊' : '🔇'}</span>Son : {sound.on ? 'activé' : 'coupé'}</button>
         <button onclick={doFs}><span class="ic">⛶</span>{fs ? 'Quitter le plein écran' : fsOk ? 'Plein écran' : 'Plein écran (indisponible)'}</button>
         {#if ingame}
@@ -105,6 +117,7 @@
     border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 4px 0 var(--ink); font-weight: 700; font-size: 18px;
   }
   .panel button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .panel .install { background: #ffd84d; }
   .ic { width: 28px; text-align: center; font-size: 22px; }
   .go { background: #ffd84d !important; justify-content: center; font-size: 19px; }
   .ver { opacity: .7; }
