@@ -198,9 +198,12 @@
       ctx.globalAlpha = 1;
       bike(s, L, s.crash > 0 ? 112 : s.th);
 
-      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(40, 16, W - 80, 6);
-      ctx.fillStyle = L.color; ctx.fillRect(40, 16, (W - 80) * Math.min(1, s.prog / LEN), 6);
-      shout(ctx, name(p), 28, 38, 16);
+      const topView = p === 2 && mode === '2p';
+      const hudY = topView ? LH - 22 : 16;
+      const nameY = topView ? LH - 38 : 38;
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(40, hudY, W - 80, 6);
+      ctx.fillStyle = L.color; ctx.fillRect(40, hudY, (W - 80) * Math.min(1, s.prog / LEN), 6);
+      shout(ctx, name(p), 28, nameY, 16);
       ctx.restore();
       ctx.save(); ctx.translate(10, L.y0); ink(ctx, 5);
       ctx.beginPath(); ctx.roundRect(0, 0, W - 20, LH, 18); ctx.stroke(); ctx.restore();
