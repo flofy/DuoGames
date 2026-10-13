@@ -7,12 +7,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: false,
-    include: ['src/**/*.{test,spec}.js'],
+    include: ['src/**/*.{test,spec}.js', 'packages/*/src/**/*.{test,spec}.js'],
     exclude: ['node_modules'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['src/lib'],
+      include: ['src/lib', 'packages/*/src'],
       all: false,
     },
   },

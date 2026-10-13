@@ -1,0 +1,22 @@
+{
+  "name": "@duogames/coffre-fort",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Coffre-fort 3D : démêle la chaîne en tournant le téléphone sur ses 3 axes. Web component <coffre-fort-3d>.",
+  "svelte": "./src/index.js",
+  "exports": {
+    ".": { "svelte": "./src/index.js", "default": "./src/index.js" },
+    "./logic": "./src/logic.js",
+    "./svelte-options": "./svelte-options.js"
+  },
+  "sideEffects": ["./src/index.js", "./src/CoffreFort.ce.svelte"],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:lib": "vite build --mode lib"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}

@@ -3,6 +3,7 @@ node_modules/
 
 # Build output (web)
 dist/
+dist-lib/
 
 # Test coverage
 coverage/
