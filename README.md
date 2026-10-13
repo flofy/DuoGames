@@ -4,7 +4,7 @@ Collection de mini-jeux pour 1 ou 2 joueurs sur le même écran (clone inspiré 
 
 **Jeux** : Morpion, Ultimate morpion, Ping-pong, Air hockey, Serpents, Sumo, Billard (2 couleurs), Mini-golf, Bataille navale (placement par glisser-déposer), Wheelie, Dots and Boxes, Carrom.
 
-**Party** (duels courts façon 1-2-Switch, joueurs face à face, chacun sa moitié d'écran) : Duel au far west, Combien de billes, Coffre-fort, Soda.
+**Party** (duels courts façon 1-2-Switch, joueurs face à face, chacun sa moitié d'écran) : Duel au far west, Combien de billes, Coffre-fort 3D (on tourne le téléphone sur ses 3 axes pour démêler une chaîne, voir `packages/coffre-fort`), Soda.
 
 **Fonctions** : mode solo contre l'IA, score de coupe sauvegardé, bruitages synthétisés (WebAudio), menu burger (son, plein écran, recommencer, retour menu), animation de lancement.
 
@@ -29,12 +29,15 @@ src/
     canvas.js             repère 360x640 et outils de dessin cartoon
     ShipArt.svelte        dessin des bateaux (bataille navale)
     Half.svelte           moitié d'écran d'un joueur (J2 retourné à 180°)
-    Dial.svelte           molette tactile (Coffre-fort)
     UpdateBanner.svelte   bandeau « Nouvelle version disponible » (PWA)
     pwa.svelte.js         enregistrement du service worker
-    party/                logique pure des jeux Party + tests (duel, marbles, safe, soda)
+    party/                logique pure des jeux Party + tests (duel, marbles, soda)
   games/                  un composant par jeu + index.js (liste)
+packages/
+  coffre-fort/            Coffre-fort 3D, paquet autonome (web component <coffre-fort-3d>), voir son README
 ```
+
+Le repo utilise les workspaces npm : `npm install` à la racine installe aussi `packages/*`. Le Coffre-fort 3D est chargé à la demande (three.js n'est téléchargé qu'au lancement du jeu) ; pour le développer seul : `npm run dev -w @duogames/coffre-fort`.
 
 ## Ajouter un jeu
 
@@ -55,7 +58,7 @@ Le site web est déployé automatiquement sur GitHub Pages à chaque push sur `m
 
 ## CI
 
-Le pipeline `Quality Checks` (`.github/workflows/ci.yml`) s'exécute à chaque push sur `main` et pull request, en trois jobs : `check` (`npm run check`, svelte-check), `test` (`npm run test:coverage`, Vitest) puis `build` (`npm run build`, qui attend les deux premiers).
+Le pipeline `Quality Checks` (`.github/workflows/ci.yml`) s'exécute à chaque push sur `main` et pull request, en trois jobs : `check` (`npm run check`, svelte-check), `test` (`npm run test:coverage`, Vitest, paquets inclus) puis `build` (`npm run build`, puis `build:lib` du paquet coffre-fort ; il attend les deux premiers).
 
 ## PWA
 

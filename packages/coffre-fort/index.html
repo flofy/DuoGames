@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Coffre-fort 3D — démo</title>
+  <style>
+    :root { --ink: #1f1a2e; --muted: #6b5a3c; --p1: #19b5fe; --p2: #ff3d7f; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { background: #ffd84d; color: var(--ink); font: 700 16px 'Trebuchet MS', system-ui, sans-serif; display: flex; flex-direction: column; padding: env(safe-area-inset-top) 8px env(safe-area-inset-bottom); }
+    header { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 4px; }
+    h1 { margin: 0; font-size: 18px; }
+    button { font: inherit; background: #fff; border: 3px solid var(--ink); border-radius: 12px; box-shadow: 0 3px 0 var(--ink); padding: 4px 12px; cursor: pointer; }
+    button[aria-pressed='true'] { background: #ffd84d; }
+    main { flex: 1; min-height: 0; }
+    coffre-fort-3d { width: 100%; height: 100%; }
+    #log { font-size: 12px; padding: 4px; min-height: 2.4em; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔐 Coffre-fort 3D</h1>
+    <span><button id="m1" aria-pressed="true">Solo</button> <button id="m2" aria-pressed="false">2 joueurs</button></span>
+  </header>
+  <main><coffre-fort-3d id="game" mode="1p"></coffre-fort-3d></main>
+  <div id="log">Événement <code>roundend</code> : en attente…</div>
+  <script type="module" src="./demo/main.js"></script>
+</body>
+</html>

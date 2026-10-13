@@ -31,6 +31,6 @@ export const games = [
   // Party : duels courts façon 1-2-Switch (moitiés d'écran face à face)
   { id: 'ouest', dom: true, party: true, name: 'Duel au far west', emoji: '🤠', target: 3, component: FarWest, color: '#e07a3f', desc: 'Dégainez après le signal' },
   { id: 'billes', dom: true, party: true, name: 'Combien de billes', emoji: '🔵', target: 3, component: Marbles, color: '#3f8fe0', desc: 'Cachez, devinez, bluffez' },
-  { id: 'coffre', dom: true, party: true, name: 'Coffre-fort', emoji: '🔐', target: 3, component: SafeCrack, color: '#6c5ce7', desc: 'Tournez la molette, trouvez le code' },
+  { id: 'coffre', dom: true, party: true, name: 'Coffre-fort', emoji: '🔐', target: 2, component: SafeCrack, color: '#6c5ce7', desc: 'Tourne le téléphone pour démêler la chaîne' },
   { id: 'soda', dom: true, party: true, name: 'Soda', emoji: '🥤', target: 3, component: Soda, color: '#e8484f', desc: 'Secouez sans faire exploser' }
 ];
