@@ -3,7 +3,8 @@ import { mount, unmount, flushSync } from 'svelte';
 import { games } from './index.js';
 
 // Test de fumée : chaque jeu Party se monte et se démonte proprement
-describe.each(games.filter((g) => g.party))('$name', (g) => {
+// le Coffre-fort 3D est un web component chargé à la demande : testé dans SafeCrack.test.js
+describe.each(games.filter((g) => g.party && g.id !== 'coffre'))('$name', (g) => {
   afterEach(() => {
     vi.useRealTimers();
     document.body.innerHTML = '';
