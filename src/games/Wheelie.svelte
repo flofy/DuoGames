@@ -8,12 +8,12 @@
 
   onMount(() => {
     const ctx = cv.getContext('2d');
-    const LEN = 600, BX = 110, LH = 280;
+    const LEN = 600, BX = 110, LH = H / 2;
     const LANE = {
-      2: { y0: 20, sky: ['#3b0764', '#f97316'], far: '#5b1a63', near: '#7c2d6b', color: C2, helmet: '#fca5a5' },
-      1: { y0: 340, sky: ['#1e1b4b', '#38bdf8'], far: '#26357a', near: '#2f5aa8', color: C1, helmet: '#bfdbfe' }
+      2: { y0: 0, sky: ['#3b0764', '#f97316'], far: '#5b1a63', near: '#7c2d6b', color: C2, helmet: '#fca5a5' },
+      1: { y0: H / 2, sky: ['#1e1b4b', '#38bdf8'], far: '#26357a', near: '#2f5aa8', color: C1, helmet: '#bfdbfe' }
     };
-    const GROUND = 200;
+    const GROUND = Math.round(LH * 0.68);
     const name = (p) => (p === 2 && mode === '1p' ? 'IA' : 'J' + p);
     const mk = () => ({ prog: 0, th: 0, om: 0, v: 0, crash: 0, rot: 0, ptrs: new Set(), parts: [] });
     let pl = { 1: mk(), 2: mk() };
@@ -153,6 +153,11 @@
       ctx.translate(10, L.y0);
       ctx.beginPath(); ctx.roundRect(0, 0, W - 20, LH, 18); ctx.clip();
       ctx.translate(-10, 0);
+      if (p === 2 && mode === '2p') {
+        ctx.translate(W / 2, LH / 2);
+        ctx.rotate(Math.PI);
+        ctx.translate(-W / 2, -LH / 2);
+      }
       const sky = ctx.createLinearGradient(0, 0, 0, GROUND);
       sky.addColorStop(0, L.sky[0]); sky.addColorStop(1, L.sky[1]);
       ctx.fillStyle = sky; ctx.fillRect(0, 0, W, LH);
@@ -193,9 +198,12 @@
       ctx.globalAlpha = 1;
       bike(s, L, s.crash > 0 ? 112 : s.th);
 
-      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(40, 16, W - 80, 6);
-      ctx.fillStyle = L.color; ctx.fillRect(40, 16, (W - 80) * Math.min(1, s.prog / LEN), 6);
-      shout(ctx, name(p), 28, 38, 16);
+      const topView = p === 2 && mode === '2p';
+      const hudY = topView ? LH - 22 : 16;
+      const nameY = topView ? LH - 38 : 38;
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(40, hudY, W - 80, 6);
+      ctx.fillStyle = L.color; ctx.fillRect(40, hudY, (W - 80) * Math.min(1, s.prog / LEN), 6);
+      shout(ctx, name(p), 28, nameY, 16);
       ctx.restore();
       ctx.save(); ctx.translate(10, L.y0); ink(ctx, 5);
       ctx.beginPath(); ctx.roundRect(0, 0, W - 20, LH, 18); ctx.stroke(); ctx.restore();
@@ -224,5 +232,5 @@
 <canvas bind:this={cv} width={W} height={H}></canvas>
 
 <style>
-  canvas { width: min(100cqw, 100cqh * 9 / 16); aspect-ratio: 9 / 16; height: auto; }
+  canvas { width: 100%; height: 100%; aspect-ratio: auto; }
 </style>
