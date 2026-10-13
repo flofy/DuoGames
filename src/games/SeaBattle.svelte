@@ -292,7 +292,7 @@
 <style>
   .bn {
     --bw: min(94cqw, calc(100cqh - 250px), 360px);
-    position: relative; width: min(96cqw, 400px); max-height: 100cqh; overflow-y: auto;
+    position: relative; width: min(96cqw, 400px); height: 100cqh; max-height: 100cqh; overflow: hidden; touch-action: none;
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 0;
   }
   .bn.placing { touch-action: none; overflow: hidden; }
