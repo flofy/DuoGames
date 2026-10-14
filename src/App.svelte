@@ -4,10 +4,13 @@
   import GameShell from './lib/GameShell.svelte';
   import Burger from './lib/Burger.svelte';
   import UpdateBanner from './lib/UpdateBanner.svelte';
+  import Multi from './lib/net/Multi.svelte';
+  import { codeFromUrl } from './lib/net/session.svelte.js';
   import { stats } from './lib/store.svelte.js';
   import { sfx } from './lib/sfx.svelte.js';
 
   let current = $state(null);
+  let multi = $state(false);
   let mode = $state('2p');
   let splash = $state(true);
   let leaving = $state(false);
@@ -22,6 +25,8 @@
     setTimeout(() => (splash = false), 600);
   }
   onMount(() => {
+    // Lien d'invitation partagé (?room=AB34) : on file directement au salon.
+    if (codeFromUrl()) multi = true;
     const t = setTimeout(skip, 2800);
     return () => clearTimeout(t);
   });
@@ -38,7 +43,9 @@
   </button>
 {/snippet}
 
-{#if current}
+{#if multi}
+  <Multi onexit={() => (multi = false)} />
+{:else if current}
   <GameShell game={current} {mode} onexit={() => (current = null)} />
 {:else}
   <main>
@@ -52,6 +59,12 @@
       <button class:on={mode === '1p'} onclick={() => setMode('1p')}>1 joueur</button>
       <button class:on={mode === '2p'} onclick={() => setMode('2p')}>2 joueurs</button>
     </div>
+
+    <button class="multi" onclick={() => { sfx('tap'); multi = true; }}>
+      <span class="globe">🌐</span>
+      <span class="txt"><b>Multi-appareils</b><small>Un salon à rejoindre depuis chaque téléphone ou ordinateur</small></span>
+      <span class="chev">›</span>
+    </button>
 
     <div class="cup">
       <span class="side p1">J1 <b>{stats.p1}</b></span>
@@ -107,6 +120,16 @@
     background: #fff; border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink);
     padding: 10px 16px; margin-bottom: 20px; font-weight: 700; font-size: 17px;
   }
+  .multi {
+    width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; margin: 0 0 20px;
+    background: #fff; border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 12px 16px;
+  }
+  .multi:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+  .multi .globe { font-size: 26px; }
+  .multi .txt { display: flex; flex-direction: column; flex: 1; }
+  .multi b { font-size: 17px; }
+  .multi small { font-size: 12px; font-weight: 600; color: var(--muted); line-height: 1.25; }
+  .multi .chev { font-size: 26px; color: var(--muted); }
   .cup b { font-size: 24px; }
   .p1 { color: #0a8fd1; } .p2 { color: #e0185f; }
   .mid { color: #e08a00; }

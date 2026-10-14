@@ -1,10 +1,30 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "duogames",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-12",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    // Seules ces routes passent par le Worker : tout le reste est servi
+    // directement depuis dist/ (plus rapide et moins cher).
+    "run_worker_first": ["/api/*", "/parties/*"]
+  },
+  // Mode multi-appareils : un Durable Object (classe GameRoom) par code de salon.
+  "durable_objects": {
+    "bindings": [{ "name": "GameRoom", "class_name": "GameRoom" }]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GameRoom"]
+    }
+  ],
+  "vars": {
+    // Origines supplémentaires autorisées à ouvrir un WebSocket (ex. le site
+    // GitHub Pages). Vide = seules l'origine du Worker et localhost sont admises.
+    // Exemple : "ALLOWED_ORIGINS": "https://flofy.github.io"
+    "ALLOWED_ORIGINS": ""
   },
   // Preview settings are isolated from production.
   // Add preview-specific bindings or variables here if the app needs them.

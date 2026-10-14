@@ -21,6 +21,14 @@ ios/
 # Tooling caches
 .vite/
 
+# Cloudflare / wrangler
+.wrangler/
+
+# Variables d'environnement locales (voir .env.example)
+.env
+.env.*
+!.env.example
+
 # OS and logs
 .DS_Store
 *.log

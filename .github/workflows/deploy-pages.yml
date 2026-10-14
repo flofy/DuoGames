@@ -27,7 +27,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Optionnel : adresse du Worker multi-appareils si le site n'est pas servi
+      # par Cloudflare (variable de dépôt PARTY_HOST, ex. mon-worker.workers.dev).
       - run: npm run build
+        env:
+          VITE_PARTY_HOST: ${{ vars.PARTY_HOST }}
       - uses: actions/configure-pages@v6.0.0
       - uses: actions/upload-pages-artifact@v5.0.0
         with:
