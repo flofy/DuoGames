@@ -12,6 +12,9 @@ let updateSW = null;
 let installPrompt = null;
 
 export function initPwa() {
+  // En dev local, on désactive le service worker pour éviter qu'il cache l'ancienne version.
+  if (import.meta.DEV) return;
+
   // Dans l'APK (Capacitor), les fichiers sont embarqués : pas de service worker ni de prompt PWA.
   if (Capacitor.isNativePlatform() || !('serviceWorker' in navigator)) return;
 

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { mount, unmount, flushSync } from 'svelte';
 import { games } from './index.js';
 
-// Test de fumée : chaque jeu Party se monte et se démonte proprement
-describe.each(games.filter((g) => g.party))('$name', (g) => {
+// Test de fumée : chaque jeu Party à moitiés d'écran se monte et se démonte proprement
+describe.each(games.filter((g) => g.half))('$name', (g) => {
   afterEach(() => {
     vi.useRealTimers();
     document.body.innerHTML = '';

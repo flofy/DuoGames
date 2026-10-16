@@ -135,16 +135,16 @@
 </div>
 
 <style>
-  .u { width: min(96cqw, calc(100cqh - 8px), 440px); display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .u { width: min(96cqw, calc(100cqh - 8px), 640px); display: flex; flex-direction: column; gap: 8px; align-items: center; }
   .status { margin: 0; font-weight: 700; font-size: 17px; min-height: 24px; text-align: center; -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; }
-  .big { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; background: #fff7dd; padding: 8px; border: 4px solid var(--ink); border-radius: 20px; box-shadow: 0 7px 0 var(--ink); }
+  .big { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; aspect-ratio: 1; background: #fff7dd; padding: 8px; border: 4px solid var(--ink); border-radius: 20px; box-shadow: 0 7px 0 var(--ink); }
   .sb {
-    position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+    position: relative; display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 3px; aspect-ratio: 1;
     padding: 4px; border-radius: 12px; background: #e9dcc0; border: 3px solid var(--ink); opacity: .6; transition: transform .15s;
   }
   .sb.active { opacity: 1; background: #ffe14d; transform: scale(1.03); box-shadow: 0 0 0 3px var(--p2); }
   .cell {
-    aspect-ratio: 1; border-radius: 6px; background: #fff; border: 2px solid var(--ink);
+    width: 100%; height: 100%; aspect-ratio: 1; border-radius: 6px; background: #fff; border: 2px solid var(--ink);
     font-size: clamp(12px, 5.4cqw, 26px); font-weight: 700; line-height: 1; padding: 0;
     display: flex; align-items: center; justify-content: center; -webkit-text-stroke: 2.5px var(--ink); paint-order: stroke fill;
   }
