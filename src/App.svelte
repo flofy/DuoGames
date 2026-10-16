@@ -4,16 +4,30 @@
   import GameShell from './lib/GameShell.svelte';
   import Burger from './lib/Burger.svelte';
   import UpdateBanner from './lib/UpdateBanner.svelte';
-  import { stats } from './lib/store.svelte.js';
+  import { stats, recentGames } from './lib/store.svelte.js';
   import { sfx } from './lib/sfx.svelte.js';
 
   let current = $state(null);
-  let mode = $state('2p');
+  let mode = $state('1p');
   let splash = $state(true);
   let leaving = $state(false);
+  let tab = $state('classic');
   const title = 'Jeux à deux'.split('');
   const classic = games.filter((g) => !g.party);
   const party = games.filter((g) => g.party);
+
+  // Reordonne les jeux : dernier joué en premier, les jamais joués gardent leur ordre relatif
+  function ordered(list) {
+    const rec = recentGames.list;
+    return [...list].sort((a, b) => {
+      const ia = rec.indexOf(a.id);
+      const ib = rec.indexOf(b.id);
+      if (ia === -1 && ib === -1) return 0;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+  }
 
   function skip() {
     if (leaving) return;
@@ -26,7 +40,7 @@
     return () => clearTimeout(t);
   });
 
-  function open(g) { sfx('tap'); current = g; }
+  function open(g) { sfx('tap'); recentGames.touch(g.id); current = g; }
   function setMode(m) { sfx('tap'); mode = m; }
 </script>
 
@@ -42,9 +56,11 @@
   <GameShell game={current} {mode} onexit={() => (current = null)} />
 {:else}
   <main>
-    <div class="topbar"><Burger side="right" /></div>
-    <div class="hero">
+    <div class="topbar">
       <h1 class="outlined">Jeux à deux</h1>
+      <Burger side="right" />
+    </div>
+    <div class="hero">
       <p class="sub">Un écran, deux joueurs. Ou toi contre l'IA.</p>
     </div>
 
@@ -60,18 +76,24 @@
       <button class="reset" onclick={() => stats.reset()} aria-label="Réinitialiser le score">↺</button>
     </div>
 
-    <div class="grid">
-      {#each classic as g (g.id)}
-        {@render card(g)}
-      {/each}
+    <div class="tabs">
+      <button class:active={tab === 'classic'} onclick={() => (tab = 'classic')}>Classique</button>
+      <button class:active={tab === 'party'} onclick={() => (tab = 'party')}>🎉 Party</button>
     </div>
 
-    <h2 class="cat outlined">🎉 Party</h2>
-    <div class="grid">
-      {#each party as g (g.id)}
-        {@render card(g)}
-      {/each}
-    </div>
+    {#if tab === 'classic'}
+      <div class="grid">
+        {#each ordered(classic) as g (g.id)}
+          {@render card(g)}
+        {/each}
+      </div>
+    {:else}
+      <div class="grid">
+        {#each ordered(party) as g (g.id)}
+          {@render card(g)}
+        {/each}
+      </div>
+    {/if}
   </main>
 {/if}
 
@@ -91,9 +113,17 @@
 {/if}
 
 <style>
-  main { max-width: 520px; margin: 0 auto; padding: 12px 16px 30px; height: 100%; overflow-y: auto; }
-  .topbar { display: flex; justify-content: flex-end; }
-  .hero { text-align: center; margin: 0 0 18px; }
+  main { max-width: 520px; margin: 0 auto; padding: 12px 16px 30px; min-height: 100dvh; }
+  .topbar {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+  }
+  .hero { text-align: left; margin: 0 0 18px; }
   h1 {
     margin: 0; font-size: 44px; font-weight: 700; color: #fff; letter-spacing: 1px;
     -webkit-text-stroke-width: 9px; text-shadow: 0 6px 0 var(--ink); transform: rotate(-2deg); display: inline-block;
@@ -111,6 +141,13 @@
   .p1 { color: #0a8fd1; } .p2 { color: #e0185f; }
   .mid { color: #e08a00; }
   .reset { background: transparent; font-size: 20px; color: var(--muted); }
+  .tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px;
+    background: #fff; border: 3px solid var(--ink); border-radius: 18px;
+    box-shadow: 0 5px 0 var(--ink); margin-bottom: 16px;
+  }
+  .tabs button { padding: 10px; border-radius: 12px; background: transparent; font-weight: 700; font-size: 17px; color: var(--muted); }
+  .tabs button.active { background: var(--p2); color: #fff; border: 3px solid var(--ink); padding: 7px; box-shadow: 0 3px 0 var(--ink); }
   .cat { margin: 26px 0 14px; font-size: 28px; color: #fff; -webkit-text-stroke-width: 7px; text-shadow: 0 4px 0 var(--ink); transform: rotate(-1.5deg); text-align: center; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
   .card {
@@ -166,5 +203,21 @@
   @keyframes drop {
     0% { transform: translateY(-110vh) rotate(-25deg); opacity: 0; }
     100% { transform: translateY(0) rotate(0); opacity: 1; }
+  }
+
+  /* Responsive : grille et largeur container sur grand écran */
+  @media (min-width: 768px) {
+    main { max-width: 960px; }
+    .topbar {
+      width: auto;
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

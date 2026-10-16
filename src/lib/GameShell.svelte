@@ -34,7 +34,7 @@
     {/key}
 
     <div class="hud">
-      <Burger ingame onmenu={onexit} onrestart={again} />
+      <Burger ingame side="right" onmenu={onexit} onrestart={again} />
       <div class="score">
         <span class="pill p1">{s1}</span>
         <span class="pill p2">{s2}</span>
@@ -73,7 +73,7 @@
     display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none;
   }
   .hud > :global(*) { pointer-events: auto; }
-  .score { display: flex; gap: 6px; }
+  .score { display: flex; gap: 6px; margin-right: 70px; }
   .pill {
     min-width: 36px; text-align: center; font-size: 20px; font-weight: 700; padding: 1px 10px;
     border-radius: 12px; background: #fff; border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink);

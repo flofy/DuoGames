@@ -16,7 +16,8 @@ body {
   color: var(--ink);
   font-family: var(--font);
   font-weight: 500;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   user-select: none;
   -webkit-user-select: none;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);

@@ -104,7 +104,7 @@
     animation: fade .18s ease-out;
   }
   .inner {
-    width: 100%; height: 100dvh; max-width: 520px; margin: 0 auto;
+    width: 100%; height: 100dvh; max-width: none; margin: 0;
     display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; overflow-y: auto; overscroll-behavior: contain;
     background: #fff7dd;
     padding: 24px 20px;

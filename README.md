@@ -2,7 +2,7 @@
 
 Collection de mini-jeux pour 1 ou 2 joueurs sur le même écran (clone inspiré de « Jeux à deux : multijoueur »), en Svelte 5 + Vite, style cartoon.
 
-**Jeux** : Morpion, Ultimate morpion, Ping-pong, Air hockey, Serpents, Sumo, Billard (2 couleurs), Mini-golf, Bataille navale (placement par glisser-déposer), Wheelie, Dots and Boxes, Carrom.
+**Jeux** : Morpion, Ultimate morpion, Ping-pong, Air hockey, Serpents, Sumo, Billard (2 couleurs), Mini-golf, Bataille navale (placement par glisser-déposer), Wheelie, Dots and Boxes, Carrom, Flobopuyo (puzzle versus façon Puyo Puyo : chaînes, déchets, clavier ou tactile).
 
 **Party** (duels courts façon 1-2-Switch, joueurs face à face, chacun sa moitié d'écran) : Duel au far west, Combien de billes, Coffre-fort, Soda.
 
@@ -32,6 +32,7 @@ src/
     Dial.svelte           molette tactile (Coffre-fort)
     UpdateBanner.svelte   bandeau « Nouvelle version disponible » (PWA)
     pwa.svelte.js         enregistrement du service worker
+    puyo.js               logique pure de Flobopuyo (grille, chaînes, déchets, IA) + tests
     party/                logique pure des jeux Party + tests (duel, marbles, safe, soda)
   games/                  un composant par jeu + index.js (liste)
 ```
