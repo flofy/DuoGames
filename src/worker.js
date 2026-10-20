@@ -45,6 +45,14 @@ export class GameRoom {
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server, [role]);
     server.serializeAttachment({ role });
+    const otherRole = role === 'display' ? 'controller' : 'display';
+    const peers = this.ctx.getWebSockets(otherRole);
+    for (const peer of peers) {
+      try { peer.send(JSON.stringify({ type: 'room:peer', role })); } catch {}
+    }
+    if (peers.length) {
+      try { server.send(JSON.stringify({ type: 'room:peer', role: otherRole })); } catch {}
+    }
     return new Response(null, { status: 101, webSocket: client });
   }
 
@@ -71,6 +79,13 @@ export class GameRoom {
     }
   }
 
-  webSocketClose(socket) { try { socket.close(); } catch {} }
+  webSocketClose(socket) {
+    const role = socket.deserializeAttachment()?.role;
+    const otherRole = role === 'display' ? 'controller' : 'display';
+    for (const peer of this.ctx.getWebSockets(otherRole)) {
+      try { peer.send(JSON.stringify({ type: 'room:peer', role, connected: false })); } catch {}
+    }
+    try { socket.close(); } catch {}
+  }
   webSocketError(socket) { try { socket.close(1011, 'Socket error'); } catch {} }
 }
