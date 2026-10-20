@@ -44,7 +44,7 @@
     const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
     timers.add(id);
   };
-  const sensors = createSensors({ onChange: (s) => { fallback = !s.ok; sensorDiagnostic = s; } });
+  const sensors = createSensors({ onChange: (s) => { fallback = !s.ok && Boolean(s.timedOut); sensorDiagnostic = s; } });
   const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
 
   function openInChrome() {
