@@ -149,7 +149,7 @@
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    let v = remote ? remoteV : sensors.take(dt);
+    let v = remote ? remoteV.map((value) => clamp(value, -60, 60)) : sensors.take(dt);
     if (remote) remoteV = [0, 0, 0];
     v = [invert.x ? -v[0] : v[0], invert.y ? -v[1] : v[1], invert.z ? -v[2] : v[2]];
     if (dt > 0) rates = rates.map((r, i) => r + (v[i] / dt - r) * 0.3);
