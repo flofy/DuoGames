@@ -32,6 +32,7 @@
   let result = $state.raw(null);
   let invert = $state({ x: false, y: false, z: false });
   let fallback = $state(false);
+  let sensorDiagnostic = $state.raw(null);
   let glFailed = $state(false);
   let stageEl;
 
@@ -43,7 +44,14 @@
     const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
     timers.add(id);
   };
-  const sensors = createSensors({ onChange: (s) => { fallback = !s.ok; } });
+  const sensors = createSensors({ onChange: (s) => { fallback = !s.ok; sensorDiagnostic = s; } });
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+
+  function openInChrome() {
+    const current = new URL(window.location.href);
+    const target = `intent://${current.host}${current.pathname}${current.search}#Intent;scheme=${current.protocol.slice(0, -1)};package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(current.href)};end`;
+    window.location.href = target;
+  }
   const audio = createAudio(() => muted);
 
   const active = $derived(phase === 'play' ? run.segs[run.idx] : null);
@@ -253,8 +261,25 @@
       {:else if fallback}🖐️ Capteurs indisponibles : curseurs (ou W/S, A/D, Q/E).
       {:else}&nbsp;{/if}
     </div>
+    {#if fallback}
+      <div class="sensor-help">
+        <p>Le navigateur n'envoie pas les mouvements du téléphone. Vérifie les autorisations de capteurs, ou essaie Chrome.</p>
+        {#if isAndroid}
+          <button class="go chrome" type="button" onclick={openInChrome}>Ouvrir dans Chrome</button>
+        {/if}
+      </div>
+    {/if}
     <details>
-      <summary>Réglages capteurs</summary>
+      <summary>Diagnostic et réglages capteurs</summary>
+      <div class="diagnostic">
+        <div>Contexte sécurisé (HTTPS) : <b>{sensorDiagnostic?.secureContext ? 'oui' : 'non'}</b></div>
+        <div>API orientation : <b>{sensorDiagnostic?.orientationApi ? 'disponible' : 'absente'}</b></div>
+        <div>API mouvement : <b>{sensorDiagnostic?.motionApi ? 'disponible' : 'absente'}</b></div>
+        <div>Événement orientation reçu : <b>{sensorDiagnostic?.orientationEvents ? 'oui' : 'non'}</b></div>
+        <div>Événement mouvement reçu : <b>{sensorDiagnostic?.motionEvents ? 'oui' : 'non'}</b></div>
+        <div>Autorisation orientation : <b>{sensorDiagnostic?.orientationPermission ?? 'pas encore testée'}</b></div>
+        <div>Navigateur : <b class="ua">{typeof navigator !== 'undefined' ? navigator.userAgent : 'inconnu'}</b></div>
+      </div>
       <div class="inv">
         {#each AXES as a}
           <button type="button" aria-pressed={invert[a]} onclick={() => toggleInvert(a)}>Inverser {a.toUpperCase()}</button>
@@ -313,6 +338,12 @@
   .sliders label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted, #6b5a3c); }
   .sliders input { flex: 1; height: 26px; accent-color: #ffd84d; }
   .status { font-size: 12px; color: var(--muted, #6b5a3c); text-align: center; min-height: 1.2em; }
+  .sensor-help { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+  .sensor-help p { margin: 0; font-size: 12px; line-height: 1.35; color: var(--muted, #6b5a3c); font-weight: 500; }
+  .go.chrome { font-size: 14px; padding: 7px 12px; box-shadow: 0 3px 0 var(--ink, #1f1a2e); }
+  .diagnostic { display: flex; flex-direction: column; gap: 4px; padding: 8px 2px; overflow-wrap: anywhere; font-weight: 500; }
+  .diagnostic b { font-weight: 700; color: var(--ink, #1f1a2e); }
+  .diagnostic .ua { font-size: 10px; font-weight: 500; }
   details { width: 100%; font-size: 12px; color: var(--muted, #6b5a3c); }
   summary { cursor: pointer; text-align: center; }
   .inv { display: flex; gap: 8px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
