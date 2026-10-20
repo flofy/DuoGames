@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { sound } from '../lib/sfx.svelte.js';
   import { connectRoom, isRoomCode } from '../lib/second-screen/room.js';
 
@@ -18,6 +18,7 @@
       () => {
         if (!alive) return;
         status = 'ready';
+        await tick();
         if (remoteDisplay) {
           room = connectRoom({
             code: params.get('room'),
@@ -27,6 +28,8 @@
                 el?.dispatchEvent(new CustomEvent('remoteinput', { detail: { v: message.v } }));
               } else if (message?.type === 'controller:ready') {
                 el?.dispatchEvent(new Event('remote-ready'));
+              } else if (message?.type === 'room:peer') {
+                el?.dispatchEvent(new CustomEvent('remote-peer', { detail: { role: message.role, connected: message.connected !== false } }));
               }
             }
           });
