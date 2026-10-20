@@ -5,6 +5,7 @@
   import Half from '../lib/Half.svelte';
   import Dial from '../lib/Dial.svelte';
   import { HOLD, SEGMENTS, diff, level, inZone, wrapDelta, norm, randomTarget } from '../lib/party/safe.js';
+  import { connectRoom, isRoomCode } from '../lib/second-screen/room.js';
 
   let { mode, onpoint } = $props();
 
@@ -14,6 +15,10 @@
   let s = $state({ 1: mk(), 2: mk() });
   let over = $state(false);
   let winner = $state(0);
+  let remoteStatus = $state('disconnected');
+  let room;
+  const params = new URLSearchParams(window.location.search);
+  const remoteDisplay = params.get('screen') === 'display' && isRoomCode(params.get('room') || '');
   let ai = mkAI();
   const timers = [];
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
@@ -48,6 +53,18 @@
   }
 
   onMount(() => {
+    if (remoteDisplay) {
+      room = connectRoom({
+        code: params.get('room'),
+        role: 'display',
+        onStatus: (next) => { remoteStatus = next; },
+        onMessage: (message) => {
+          if (message?.type === 'controller:angle' && Number.isFinite(message.angle)) {
+            s[1].angle = norm(message.angle);
+          }
+        }
+      });
+    }
     const stop = startLoop((dt) => {
       if (over) return;
       if (mode === '1p') aiStep(dt);
@@ -61,6 +78,7 @@
     });
     return () => {
       stop();
+      room?.close();
       timers.forEach(clearTimeout);
     };
   });
@@ -68,7 +86,7 @@
 
 {#snippet side(p)}
   <p class="msg">{#if over}{winner === p ? '🔓 Ouvert !' : 'Trop lent…'}{:else}Trouve le code !{/if}</p>
-  <Dial bind:angle={s[p].angle} disabled={over || (mode === '1p' && p === 2)} open={s[p].open} />
+  <Dial bind:angle={s[p].angle} disabled={over || (mode === '1p' && p === 2) || (remoteDisplay && p === 1)} open={s[p].open} />
   <div class="heat" role="img" aria-label="Chaleur">
     {#each Array(SEGMENTS) as _, k}<i class:on={k < lvl(p)} style="--k:{k}"></i>{/each}
   </div>
@@ -76,12 +94,17 @@
 {/snippet}
 
 <div class="field">
+  {#if remoteDisplay}
+    <p class="remote-status" class:connected={remoteStatus === 'connected'}>{remoteStatus === 'connected' ? '📱 Manette connectée' : '⌛ En attente du téléphone…'}</p>
+  {/if}
   <Half p={2} {mode}>{@render side(2)}</Half>
   <Half p={1} {mode}>{@render side(1)}</Half>
 </div>
 
 <style>
   .field { width: min(100cqw, 520px); height: 100%; display: flex; flex-direction: column; gap: 14px; padding: 0 8px 12px; }
+  .remote-status { margin: 0; padding: 4px 10px; border: 2px solid var(--ink); border-radius: 12px; background: #fff; font-size: 13px; font-weight: 700; }
+  .remote-status.connected { background: #d8ffe8; }
   .msg { margin: 0; font-size: clamp(18px, 4cqh, 26px); font-weight: 700; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; }
   .heat { display: flex; gap: 5px; margin-top: 8px; }
   .heat i { width: 26px; height: 14px; border: 3px solid var(--ink); border-radius: 6px; background: #fff; }
