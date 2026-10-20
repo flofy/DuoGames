@@ -2,6 +2,7 @@
   import { stats } from './store.svelte.js';
   import { sfx } from './sfx.svelte.js';
   import Burger from './Burger.svelte';
+  import { createRoom } from './second-screen/room.js';
 
   let { game, mode, onexit } = $props();
 
@@ -9,6 +10,13 @@
   let s2 = $state(0);
   let round = $state(0);
   let winner = $state(0);
+  let roomError = $state('');
+  let copied = $state(false);
+  const params = new URLSearchParams(window.location.search);
+  const displayRoom = params.get('screen') === 'display' && params.get('room') ? params.get('room').toUpperCase() : '';
+  const controllerUrl = new URL(window.location.href);
+  controllerUrl.searchParams.set('screen', 'controller');
+  controllerUrl.searchParams.set('game', 'coffre');
 
   function point(p) {
     if (winner) return;
@@ -24,6 +32,29 @@
     s1 = 0; s2 = 0; winner = 0; round++;
   }
 
+  async function startSecondScreen() {
+    roomError = '';
+    try {
+      const code = await createRoom();
+      const url = new URL(window.location.href);
+      url.searchParams.set('screen', 'display');
+      url.searchParams.set('game', game.id);
+      url.searchParams.set('room', code);
+      window.location.assign(url.toString());
+    } catch (error) {
+      roomError = error instanceof Error ? error.message : 'Impossible de créer la salle';
+    }
+  }
+
+  async function copyControllerLink() {
+    try {
+      await navigator.clipboard.writeText(controllerUrl.toString());
+      copied = true;
+    } catch {
+      copied = false;
+    }
+  }
+
   const name = (p) => (p === 2 && mode === '1p' ? 'IA' : `J${p}`);
 </script>
 
@@ -35,6 +66,9 @@
 
     <div class="hud">
       <Burger ingame onmenu={onexit} onrestart={again} />
+      {#if game.id === 'coffre' && !displayRoom}
+        <button class="tv-button" onclick={startSecondScreen}>📺 Écran TV</button>
+      {/if}
       <div class="score">
         <span class="pill p1">{s1}</span>
         <span class="pill p2">{s2}</span>
@@ -58,6 +92,16 @@
         </div>
       </div>
     {/if}
+    {#if displayRoom}
+      <aside class="room-panel">
+        <strong>📱 Connecte ton téléphone</strong>
+        <span>Code de salle : <b>{displayRoom}</b></span>
+        <span class="room-url">Ouvre ce lien sur ton téléphone, ou saisis le code dans l’écran manette.</span>
+        <span class="controller-link">{controllerUrl.toString()}</span>
+        <button onclick={copyControllerLink}>{copied ? 'Lien copié ✓' : 'Copier le lien de la manette'}</button>
+      </aside>
+    {/if}
+    {#if roomError}<p class="room-error">{roomError}</p>{/if}
   </div>
 </div>
 
