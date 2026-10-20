@@ -28,6 +28,40 @@ describe('capteurs', () => {
     s.stop();
   });
 
+  it('utilise le gyroscope DeviceMotion quand deviceorientation ne fournit rien', async () => {
+    const onChange = vi.fn();
+    const s = createSensors({ onChange });
+    await s.start();
+    const motion = (alpha, beta, gamma, interval = 100) => {
+      const e = new Event('devicemotion');
+      Object.defineProperties(e, {
+        rotationRate: { value: { alpha, beta, gamma } },
+        interval: { value: interval }
+      });
+      window.dispatchEvent(e);
+    };
+    motion(10, 20, 30);
+    expect(s.ok).toBe(true);
+    expect(onChange).toHaveBeenCalledWith({ ok: true, source: 'motion' });
+    expect(s.take(0.016)).toEqual([2, 3, 1]);
+    s.stop();
+  });
+
+  it('préfère deviceorientation au gyroscope si les deux sont disponibles', async () => {
+    const s = createSensors();
+    await s.start();
+    const motion = new Event('devicemotion');
+    Object.defineProperties(motion, {
+      rotationRate: { value: { alpha: 10, beta: 20, gamma: 30 } },
+      interval: { value: 100 }
+    });
+    window.dispatchEvent(motion);
+    ori(0, 0, 0);
+    ori(0, 10, 0);
+    expect(s.take(0.016)[0]).toBeCloseTo(10, 4);
+    s.stop();
+  });
+
   it('plafonne les sauts entre deux lectures', async () => {
     const s = createSensors({ maxStep: 60 });
     await s.start();
