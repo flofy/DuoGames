@@ -6,10 +6,16 @@
   import UpdateBanner from './lib/UpdateBanner.svelte';
   import { stats } from './lib/store.svelte.js';
   import { sfx } from './lib/sfx.svelte.js';
+  import SecondScreenController from './lib/SecondScreenController.svelte';
 
-  let current = $state(null);
-  let mode = $state('2p');
-  let splash = $state(true);
+  const params = new URLSearchParams(window.location.search);
+  const requestedRole = params.get('screen');
+  const screenRole = requestedRole === 'controller' || (requestedRole === 'display' && params.get('room')) ? requestedRole : null;
+  const screenGame = params.get('game') || 'coffre';
+
+  let current = $state(screenRole === 'display' ? (games.find((g) => g.id === screenGame) ?? null) : null);
+  let mode = $state(screenRole ? '1p' : '2p');
+  let splash = $state(!screenRole);
   let leaving = $state(false);
   const title = 'Jeux à deux'.split('');
   const classic = games.filter((g) => !g.party);
@@ -22,6 +28,7 @@
     setTimeout(() => (splash = false), 600);
   }
   onMount(() => {
+    if (screenRole) return;
     const t = setTimeout(skip, 2800);
     return () => clearTimeout(t);
   });
@@ -38,7 +45,9 @@
   </button>
 {/snippet}
 
-{#if current}
+{#if screenRole === 'controller'}
+  <SecondScreenController />
+{:else if current}
   <GameShell game={current} {mode} onexit={() => (current = null)} />
 {:else}
   <main>
