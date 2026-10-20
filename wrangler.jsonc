@@ -1,12 +1,28 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "duogames",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-12",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
   },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GAME_ROOMS",
+        "class_name": "GameRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GameRoom"]
+    }
+  ],
   // Preview settings are isolated from production.
-  // Add preview-specific bindings or variables here if the app needs them.
   "previews": {}
 }
