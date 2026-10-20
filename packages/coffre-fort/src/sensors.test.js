@@ -43,7 +43,7 @@ describe('capteurs', () => {
     motion(10, 20, 30);
     expect(s.ok).toBe(true);
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
-      ok: true, source: 'motion', motionEvents: true, secureContext: true
+      ok: true, source: 'motion', motionEvents: true
     }));
     expect(s.take(0.016)).toEqual([2, 3, 1]);
     s.stop();
@@ -90,7 +90,7 @@ describe('capteurs', () => {
     await s.start();
     await vi.advanceTimersByTimeAsync(1600);
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
-      ok: false, source: null, secureContext: true, orientationEvents: false, motionEvents: false
+      ok: false, source: null, timedOut: true, orientationEvents: false, motionEvents: false
     }));
     expect(s.ok).toBe(false);
     s.setSlider(1, 0.5);
