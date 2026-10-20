@@ -118,6 +118,14 @@
   }
   .hud > :global(*) { pointer-events: auto; }
   .score { display: flex; gap: 6px; }
+  .tv-button { pointer-events: auto; background: #fff; border: 3px solid var(--ink); border-radius: 12px; padding: 7px 10px; font-size: 13px; font-weight: 700; box-shadow: 0 3px 0 var(--ink); }
+  .room-panel { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 12; width: min(92%, 360px); display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px; border: 3px solid var(--ink); border-radius: 18px; background: #fff; box-shadow: 0 5px 0 var(--ink); text-align: center; font-size: 14px; }
+  .room-panel strong { font-size: 16px; -webkit-text-stroke-width: 0; }
+  .room-panel b { font-size: 22px; letter-spacing: 3px; }
+  .room-url { font-size: 12px; }
+  .controller-link { max-width: 100%; overflow-wrap: anywhere; font-size: 10px; line-height: 1.2; color: var(--muted); }
+  .room-panel button { border: 2px solid var(--ink); border-radius: 10px; padding: 7px 10px; background: #ffd84d; font-weight: 700; }
+  .room-error { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); z-index: 20; background: #fff; border: 2px solid #b42318; border-radius: 10px; padding: 8px 12px; max-width: 90%; }
   .pill {
     min-width: 36px; text-align: center; font-size: 20px; font-weight: 700; padding: 1px 10px;
     border-radius: 12px; background: #fff; border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
