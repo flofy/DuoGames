@@ -31,7 +31,7 @@
         role: 'controller',
         onStatus: (next) => { status = next; },
         onMessage: (message) => {
-          if (message?.type === 'room:peer' && message.role === 'display') angleHelp = true;
+          if (message?.type === 'room:peer' && message.role === 'display') angleHelp = message.connected !== false;
         }
       });
     } catch {
@@ -117,7 +117,7 @@
   <section>
     <h2>2. Démarrer la manche</h2>
     <p>Quand le coffre est affiché sur la TV, lance la manche depuis ton téléphone.</p>
-    <button class="primary" disabled={status !== 'connected' || !sensorEnabled} onclick={startRound}>Prêt, démarrer !</button>
+    <button class="primary" disabled={status !== 'connected' || !sensorEnabled || !angleHelp} onclick={startRound}>Prêt, démarrer !</button>
   </section>
 
   {#if !sensorState?.ok}
