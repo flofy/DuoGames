@@ -15,7 +15,7 @@
   onMount(() => {
     let alive = true;
     import('@duogames/coffre-fort').then(
-      () => {
+      async () => {
         if (!alive) return;
         status = 'ready';
         await tick();
