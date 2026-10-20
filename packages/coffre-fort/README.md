@@ -44,6 +44,7 @@ Voir `src/games/SafeCrack.svelte` dans DuoGames.
 | `mode` | `'1p'` \| `'2p'` | `'1p'` | contre l'IA, ou chacun son tour |
 | `seed` | nombre | `0` | graine de la chaîne (`0` = aléatoire) ; même graine = mêmes chaînes (utile pour deux appareils) |
 | `muted` | booléen | `false` | coupe les sons et les vibrations |
+| `remote` | booléen | `false` | reçoit les mouvements du téléphone via le canal temps réel DuoGames (mode écran distant) |
 
 ### Événements
 

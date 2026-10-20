@@ -3,7 +3,7 @@
   customElement={{
     tag: 'coffre-fort-3d',
     shadow: 'open',
-    props: { mode: { type: 'String' }, seed: { type: 'Number' }, muted: { type: 'Boolean' } }
+    props: { mode: { type: 'String' }, seed: { type: 'Number' }, muted: { type: 'Boolean' }, remote: { type: 'Boolean' } }
   }}
 />
 
@@ -18,7 +18,7 @@
 
   // mode : '1p' (contre le temps de l'IA) ou '2p' (chacun son tour, même chaîne)
   // seed : graine optionnelle (0 = aléatoire) ; muted : coupe sons et vibrations
-  let { mode = '1p', seed = 0, muted = false } = $props();
+  let { mode = '1p', seed = 0, muted = false, remote = false } = $props();
   const host = $host();
 
   let phase = $state('calib'); // calib | count | play | done | pass | result
@@ -39,6 +39,22 @@
   let O = [1, 0, 0, 0];
   let doorT = 0, doorTarget = 0, t0 = 0, round = 0, aiMs = 0, raf = 0, last = 0;
   let scene = null;
+  let remoteV = [0, 0, 0];
+  let remoteConnected = $state(false);
+
+  function onRemoteInput(event) {
+    const v = event.detail?.v;
+    if (!remote || !Array.isArray(v) || v.length !== 3) return;
+    remoteV = remoteV.map((value, i) => value + clamp(Number(v[i]) || 0, -60, 60));
+  }
+
+  function onRemoteReady() {
+    if (remote && phase === 'calib') ready();
+  }
+
+  function onRemotePeer(event) {
+    if (event.detail?.role === 'controller') remoteConnected = event.detail.connected !== false;
+  }
   const timers = new Set();
   const later = (fn, ms) => {
     const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
@@ -90,7 +106,7 @@
 
   async function ready() {
     audio.unlock();
-    await sensors.start(); // geste utilisateur : autorisation iOS
+    if (!remote) await sensors.start(); // geste utilisateur : autorisation iOS
     sensors.reset();
     O = [1, 0, 0, 0];
     phase = 'count';
@@ -133,7 +149,8 @@
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    let v = sensors.take(dt);
+    let v = remote ? remoteV.map((value) => clamp(value, -60, 60)) : sensors.take(dt);
+    if (remote) remoteV = [0, 0, 0];
     v = [invert.x ? -v[0] : v[0], invert.y ? -v[1] : v[1], invert.z ? -v[2] : v[2]];
     if (dt > 0) rates = rates.map((r, i) => r + (v[i] / dt - r) * 0.3);
 
@@ -157,6 +174,9 @@
   }
 
   onMount(() => {
+    host.addEventListener('remoteinput', onRemoteInput);
+    host.addEventListener('remote-ready', onRemoteReady);
+    host.addEventListener('remote-peer', onRemotePeer);
     try { scene = createScene(stageEl); } catch { glFailed = true; }
     const fit = () => scene?.resize(stageEl.clientWidth, stageEl.clientHeight);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;
@@ -167,6 +187,9 @@
     last = performance.now();
     raf = requestAnimationFrame(frame);
     return () => {
+      host.removeEventListener('remoteinput', onRemoteInput);
+      host.removeEventListener('remote-ready', onRemoteReady);
+      host.removeEventListener('remote-peer', onRemotePeer);
       cancelAnimationFrame(raf);
       ro?.disconnect();
       sensors.stop();
@@ -189,8 +212,12 @@
         <div class="panel">
           {#if phase === 'calib'}
             <h2>{who(turn)}</h2>
-            <p>Tiens le téléphone droit devant toi, puis touche Prêt. Ta position devient le point de départ.</p>
-            <button class="go" onclick={ready}>Prêt</button>
+            <p>{remote ? 'Active les capteurs sur ton téléphone, puis démarre la manche depuis la manette.' : 'Tiens le téléphone droit devant toi, puis touche Prêt. Ta position devient le point de départ.'}</p>
+            {#if remote}
+              <p class="remote-wait">{remoteConnected ? "📱 Manette connectée — démarre depuis le téléphone." : "⌛ En attente de la manette…"}</p>
+            {:else}
+              <button class="go" onclick={ready}>Prêt</button>
+            {/if}
           {:else}
             <p class="big">{countN}</p>
           {/if}
@@ -291,6 +318,7 @@
 
 <style>
   :host { display: block; width: 100%; height: 100%; min-height: 0; user-select: none; -webkit-user-select: none; }
+  .remote-wait { margin: 8px 0 0; font-weight: 700; color: var(--muted, #6b5a3c); }
   .root {
     height: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 8px 8px;
     font-family: var(--font, 'Trebuchet MS', system-ui, sans-serif); font-weight: 700; color: var(--ink, #1f1a2e);
