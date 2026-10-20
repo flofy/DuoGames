@@ -1,18 +1,43 @@
 <script>
   import { onMount } from 'svelte';
   import { sound } from '../lib/sfx.svelte.js';
+  import { connectRoom, isRoomCode } from '../lib/second-screen/room.js';
 
   // Coffre-fort 3D : web component <coffre-fort-3d> du paquet @duogames/coffre-fort.
   // three.js est lourd : le module n'est chargé que lorsqu'on lance ce jeu.
   let { mode, onpoint } = $props();
   let status = $state('loading'); // loading | ready | error
   let el = $state(null);
+  let room;
+  const params = new URLSearchParams(window.location.search);
+  const remoteDisplay = params.get('screen') === 'display' && isRoomCode(params.get('room') || '');
 
   onMount(() => {
+    let alive = true;
     import('@duogames/coffre-fort').then(
-      () => (status = 'ready'),
-      () => (status = 'error')
+      () => {
+        if (!alive) return;
+        status = 'ready';
+        if (remoteDisplay) {
+          room = connectRoom({
+            code: params.get('room'),
+            role: 'display',
+            onMessage: (message) => {
+              if (message?.type === 'controller:motion') {
+                el?.dispatchEvent(new CustomEvent('remoteinput', { detail: { v: message.v } }));
+              } else if (message?.type === 'controller:ready') {
+                el?.dispatchEvent(new Event('remote-ready'));
+              }
+            }
+          });
+        }
+      },
+      () => { if (alive) status = 'error'; }
     );
+    return () => {
+      alive = false;
+      room?.close();
+    };
   });
 
   // un point par manche gagnée (winner : 1, 2 ou 0 pour une égalité)
@@ -28,7 +53,7 @@
 </script>
 
 {#if status === 'ready'}
-  <coffre-fort-3d bind:this={el} {mode} muted={!sound.on}></coffre-fort-3d>
+  <coffre-fort-3d bind:this={el} {mode} muted={!sound.on} remote={remoteDisplay}></coffre-fort-3d>
 {:else}
   <p class="msg outlined">{status === 'error' ? 'Impossible de charger le coffre 😕' : 'Chargement du coffre…'}</p>
 {/if}
