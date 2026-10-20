@@ -11,8 +11,26 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
   let acc = [0, 0, 0];
   let listening = false;
   let timer = null;
+  let orientationEvents = false;
+  let motionEvents = false;
+  let orientationPermission = 'non-demandée';
   const sliders = [0, 0, 0];
   const keys = {};
+
+  function diagnostics() {
+    return {
+      secureContext: window.isSecureContext,
+      orientationApi: 'DeviceOrientationEvent' in window,
+      motionApi: 'DeviceMotionEvent' in window,
+      orientationEvents,
+      motionEvents,
+      orientationPermission
+    };
+  }
+
+  function report() {
+    onChange({ ok, source, ...diagnostics() });
+  }
 
   function activate(nextSource) {
     if (source !== nextSource) {
@@ -26,6 +44,10 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
   }
 
   function onOri(e) {
+    if (!orientationEvents) {
+      orientationEvents = true;
+      report();
+    }
     if (e.beta == null || e.gamma == null) return;
     // Préférer l'orientation absolue lorsqu'elle est disponible : elle donne une
     // position stable. Le gyroscope reste un secours si cet événement est bloqué.
@@ -39,6 +61,10 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
   }
 
   function onMotion(e) {
+    if (!motionEvents) {
+      motionEvents = true;
+      report();
+    }
     // Certains navigateurs/appareils exposent le gyroscope sans livrer
     // deviceorientation. Ne pas mélanger les deux sources : elles n'ont pas
     // le même référentiel ni la même sémantique.
@@ -62,14 +88,19 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
   async function start() {
     try {
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        orientationPermission = 'en attente';
         const permission = await DeviceOrientationEvent.requestPermission();
+        orientationPermission = permission === 'granted' ? 'accordée' : 'refusée';
         if (permission !== 'granted') {
           // On conserve le secours devicemotion et les contrôles manuels.
           source = null;
         }
+      } else {
+        orientationPermission = 'non requise par ce navigateur';
       }
     } catch {
       // Un refus d'orientation ne doit pas empêcher d'essayer le gyroscope.
+      orientationPermission = 'erreur ou refus';
       source = null;
     }
     if (!listening) {
@@ -79,8 +110,9 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
       window.addEventListener('keydown', onKeyDown);
       window.addEventListener('keyup', onKeyUp);
     }
+    report();
     clearTimeout(timer);
-    timer = setTimeout(() => { if (!ok) onChange({ ok: false, source: null }); }, 1500);
+    timer = setTimeout(() => { if (!ok) report(); }, 1500);
   }
 
   function stop() {
@@ -110,5 +142,5 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
 
   const setSlider = (i, value) => { sliders[i] = clamp(+value || 0, -1, 1); };
 
-  return { start, stop, reset, take, setSlider, get ok() { return ok; } };
+  return { start, stop, reset, take, setSlider, diagnostics, get ok() { return ok; } };
 }
