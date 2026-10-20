@@ -38,11 +38,12 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
     if (source !== nextSource) {
       source = nextSource;
       qPrev = null;
-      if (!ok) {
-        ok = true;
-        timedOut = false;
-        onChange({ ok: true, source: nextSource });
-      }
+      // Ne jamais mélanger les deltas du gyroscope et ceux d'orientation :
+      // les deux API ont des référentiels et des sémantiques différents.
+      acc = [0, 0, 0];
+      ok = true;
+      timedOut = false;
+      report();
     }
   }
 
