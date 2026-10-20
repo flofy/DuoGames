@@ -42,7 +42,9 @@ describe('capteurs', () => {
     };
     motion(10, 20, 30);
     expect(s.ok).toBe(true);
-    expect(onChange).toHaveBeenCalledWith({ ok: true, source: 'motion' });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
+      ok: true, source: 'motion', motionEvents: true, secureContext: true
+    }));
     expect(s.take(0.016)).toEqual([2, 3, 1]);
     s.stop();
   });
@@ -87,7 +89,9 @@ describe('capteurs', () => {
     const s = createSensors({ onChange, sliderRate: 100 });
     await s.start();
     await vi.advanceTimersByTimeAsync(1600);
-    expect(onChange).toHaveBeenCalledWith({ ok: false });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
+      ok: false, source: null, secureContext: true, orientationEvents: false, motionEvents: false
+    }));
     expect(s.ok).toBe(false);
     s.setSlider(1, 0.5);
     expect(s.take(0.1)[1]).toBeCloseTo(5, 6);
