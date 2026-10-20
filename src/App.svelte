@@ -14,7 +14,7 @@
   const screenGame = params.get('game') || 'coffre';
 
   let current = $state(screenRole === 'display' ? (games.find((g) => g.id === screenGame) ?? null) : null);
-  let mode = $state(screenRole ? '2p' : '1p');
+  let mode = $state('1p');
   let splash = $state(!screenRole);
   let leaving = $state(false);
   let tab = $state('classic');
