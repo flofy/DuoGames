@@ -96,7 +96,8 @@
       <aside class="room-panel">
         <strong>📱 Connecte ton téléphone</strong>
         <span>Code de salle : <b>{displayRoom}</b></span>
-        <span class="room-url">Ouvre DuoGames sur le téléphone, puis saisis ce code.</span>
+        <span class="room-url">Ouvre ce lien sur ton téléphone, ou saisis le code dans l’écran manette.</span>
+        <span class="controller-link">{controllerUrl.toString()}</span>
         <button onclick={copyControllerLink}>{copied ? 'Lien copié ✓' : 'Copier le lien de la manette'}</button>
       </aside>
     {/if}
@@ -122,6 +123,7 @@
   .room-panel strong { font-size: 16px; -webkit-text-stroke-width: 0; }
   .room-panel b { font-size: 22px; letter-spacing: 3px; }
   .room-url { font-size: 12px; }
+  .controller-link { max-width: 100%; overflow-wrap: anywhere; font-size: 10px; line-height: 1.2; color: var(--muted); }
   .room-panel button { border: 2px solid var(--ink); border-radius: 10px; padding: 7px 10px; background: #ffd84d; font-weight: 700; }
   .room-error { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); z-index: 20; background: #fff; border: 2px solid #b42318; border-radius: 10px; padding: 8px 12px; max-width: 90%; }
   .pill {
