@@ -13,6 +13,7 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
   let timer = null;
   let orientationEvents = false;
   let motionEvents = false;
+  let timedOut = false;
   let orientationPermission = 'non-demandée';
   const sliders = [0, 0, 0];
   const keys = {};
@@ -24,6 +25,7 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
       motionApi: 'DeviceMotionEvent' in window,
       orientationEvents,
       motionEvents,
+      timedOut,
       orientationPermission
     };
   }
@@ -38,6 +40,7 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
       qPrev = null;
       if (!ok) {
         ok = true;
+        timedOut = false;
         onChange({ ok: true, source: nextSource });
       }
     }
@@ -112,7 +115,7 @@ export function createSensors({ sliderRate = 150, maxStep = 60, onChange = () =>
     }
     report();
     clearTimeout(timer);
-    timer = setTimeout(() => { if (!ok) report(); }, 1500);
+    timer = setTimeout(() => { if (!ok) { timedOut = true; report(); } }, 1500);
   }
 
   function stop() {
