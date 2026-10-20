@@ -40,6 +40,7 @@
   let doorT = 0, doorTarget = 0, t0 = 0, round = 0, aiMs = 0, raf = 0, last = 0;
   let scene = null;
   let remoteV = [0, 0, 0];
+  let remoteConnected = $state(false);
 
   function onRemoteInput(event) {
     const v = event.detail?.v;
@@ -49,6 +50,10 @@
 
   function onRemoteReady() {
     if (remote && phase === 'calib') ready();
+  }
+
+  function onRemotePeer(event) {
+    if (event.detail?.role === 'controller') remoteConnected = event.detail.connected !== false;
   }
   const timers = new Set();
   const later = (fn, ms) => {
@@ -171,6 +176,7 @@
   onMount(() => {
     host.addEventListener('remoteinput', onRemoteInput);
     host.addEventListener('remote-ready', onRemoteReady);
+    host.addEventListener('remote-peer', onRemotePeer);
     try { scene = createScene(stageEl); } catch { glFailed = true; }
     const fit = () => scene?.resize(stageEl.clientWidth, stageEl.clientHeight);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;
@@ -183,6 +189,7 @@
     return () => {
       host.removeEventListener('remoteinput', onRemoteInput);
       host.removeEventListener('remote-ready', onRemoteReady);
+      host.removeEventListener('remote-peer', onRemotePeer);
       cancelAnimationFrame(raf);
       ro?.disconnect();
       sensors.stop();
@@ -207,7 +214,7 @@
             <h2>{who(turn)}</h2>
             <p>{remote ? 'Active les capteurs sur ton téléphone, puis démarre la manche depuis la manette.' : 'Tiens le téléphone droit devant toi, puis touche Prêt. Ta position devient le point de départ.'}</p>
             {#if remote}
-              <p class="remote-wait">⌛ En attente de la manette…</p>
+              <p class="remote-wait">{remoteConnected ? "📱 Manette connectée — démarre depuis le téléphone." : "⌛ En attente de la manette…"}</p>
             {:else}
               <button class="go" onclick={ready}>Prêt</button>
             {/if}
