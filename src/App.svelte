@@ -10,7 +10,7 @@
 
   const params = new URLSearchParams(window.location.search);
   const requestedRole = params.get('screen');
-  const screenRole = ['display', 'controller'].includes(requestedRole) && params.get('room') ? requestedRole : null;
+  const screenRole = requestedRole === 'controller' || (requestedRole === 'display' && params.get('room')) ? requestedRole : null;
   const screenGame = params.get('game') || 'coffre';
 
   let current = $state(screenRole === 'display' ? (games.find((g) => g.id === screenGame) ?? null) : null);
